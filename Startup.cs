@@ -34,7 +34,8 @@ namespace CartApi
             services.AddScoped<IUserDataContext, UserDataContext>();
 
             // transient services
-            services.AddTransient<IProductService, DefaultProductService>();
+            var productService = new DefaultProductService(Configuration["External:ProductService"]);
+            services.AddSingleton<IProductService>(productService);
             services.AddTransient<ICartService, DefaultCartService>();
 
             services.AddCors(options => {
