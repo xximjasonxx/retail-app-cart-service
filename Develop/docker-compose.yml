@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  cart-cache:
+    image: redis:alpine
+    container_name: cart-cache
+
+  cart-api:
+    build:
+      context: ../
+    container_name: cart-api-dev
+    ports:
+        - 8083:80
+    depends_on:
+      - cart-cache
+    environment:
+      PRODUCT_API_URL: http://172.17.0.1:8080/api
+      LOGIN_API_URL: http://172.17.0.1:8081/api
+      ASPNETCORE_ENVIRONMENT: Development

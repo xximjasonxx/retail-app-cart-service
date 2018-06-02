@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using CartApi.Common;
 using CartApi.Extensions;
+using Microsoft.Extensions.Configuration;
 using CartApi.Models;
 using System;
 
@@ -12,9 +13,12 @@ namespace CartApi.Middleware
     public class SetUserContextMiddleware
     {
         private readonly RequestDelegate nextDelegate;
-        public SetUserContextMiddleware(RequestDelegate del)
+        private readonly IConfiguration configuration;
+
+        public SetUserContextMiddleware(RequestDelegate del, IConfiguration config)
         {
             this.nextDelegate = del;
+            this.configuration = config;
         }
 
         public async Task Invoke(HttpContext context)
@@ -23,7 +27,7 @@ namespace CartApi.Middleware
             if (context.Request.Headers.Keys.Contains("Authorization"))
             {
                 string authorizationToken = context.Request.Headers["Authorization"];
-                User registeredUser = await authorizationToken.ValidateToken();
+                User registeredUser = await authorizationToken.ValidateToken(this.configuration["External:LoginService"]);
 
                 // add it to the request context
                 IUserDataContext dataContext = (IUserDataContext)context.RequestServices.GetService(typeof(IUserDataContext));

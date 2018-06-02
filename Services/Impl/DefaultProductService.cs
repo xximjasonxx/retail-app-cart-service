@@ -12,10 +12,9 @@ namespace CartApi.Services.Impl
     {
         private readonly RestClient restClient;
 
-        public DefaultProductService()
+        public DefaultProductService(string apiEndpoint)
         {
-            var productApiUrl = Environment.GetEnvironmentVariable("PRODUCT_API_URL");
-            this.restClient = new RestClient(productApiUrl);
+            this.restClient = new RestClient(apiEndpoint);
         }
 
         public async Task<Product> GetProductAsync(string id)
