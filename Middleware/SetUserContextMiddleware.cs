@@ -27,7 +27,7 @@ namespace CartApi.Middleware
             if (context.Request.Headers.Keys.Contains("Authorization"))
             {
                 string authorizationToken = context.Request.Headers["Authorization"];
-                User registeredUser = await authorizationToken.ValidateToken(this.configuration["External:LoginService"]);
+                User registeredUser = await authorizationToken.ValidateToken();
 
                 // add it to the request context
                 IUserDataContext dataContext = (IUserDataContext)context.RequestServices.GetService(typeof(IUserDataContext));

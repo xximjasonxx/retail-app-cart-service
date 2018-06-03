@@ -27,7 +27,13 @@ namespace CartApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var cacheClientInstance = new RedisCacheClient(Configuration.GetConnectionString("RedisConnection"));
+            string redisConnectionString = Configuration.GetConnectionString("RedisConnection");
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RedisConnection")))
+            {
+                redisConnectionString = Environment.GetEnvironmentVariable("RedisConnection");
+            }
+            
+            var cacheClientInstance = new RedisCacheClient(redisConnectionString);
             services.AddSingleton<ICacheClient>(cacheClientInstance);
 
             // scoped services

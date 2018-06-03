@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-cache
+  labels:
+    app: cart-service
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: cart-service
+    tier: cache
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-redis
+  labels:
+    app: cart-service
+spec:
+  selector:
+    matchLabels:
+      app: cart-service
+      tier: cache
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cart-service
+        tier: cache
+    spec:
+      containers:
+        - image: redis:alpine
+          name: cart-cache
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+  labels:
+    app: cart-service
+spec:
+  ports:
+    - port: 80
+  selector:
+    app: cart-service
+    tier: api
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-api
+  labels:
+    app: cart-service
+spec:
+  selector:
+    matchLabels:
+      app: cart-service
+      tier: api
+  strategy:
+    type: Recreate
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: cart-service
+        tier: api
+    spec:
+      containers:
+        - image: registry.gitlab.com/retailapp/retail-app-cart-service
+          name: cart-api
+          env:
+            - name: PRODUCT_API_URL
+              value: http://product-service/api
+            - name: LOGIN_API_URL
+              value: http://login-service/api
+            - name: RedisConnection
+              value: cart-cache

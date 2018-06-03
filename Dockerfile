@@ -5,8 +5,7 @@ COPY *.csproj ./
 RUN dotnet restore
 
 COPY . ./
-ENV ASPNETCORE_ENVIRONMENT=Development
-RUN dotnet publish -c Debug -o ./artifact
+RUN dotnet publish -c Release -o ./artifact
 
 FROM microsoft/aspnetcore:2.0
 WORKDIR /app

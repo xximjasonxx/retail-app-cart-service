@@ -12,9 +12,9 @@ namespace CartApi.Extensions
 {
     public static class StringExtensions
     {
-        public static async Task<User> ValidateToken(this string token, string loginServiceApi)
+        public static async Task<User> ValidateToken(this string token)
         {
-            var client = new RestClient(loginServiceApi);
+            var client = new RestClient(Environment.GetEnvironmentVariable("LOGIN_API_URL"));
             var request = new RestRequest("validate", Method.GET);
             request.AddHeader("Authorization", token);
 
