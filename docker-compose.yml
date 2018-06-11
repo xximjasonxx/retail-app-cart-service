@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 
 services:
   cart-cache:
@@ -8,12 +8,17 @@ services:
   cart-api:
     build:
       context: ./
-    container_name: cart-api
+    container_name: cart-api-debug
     ports:
         - 8083:80
     depends_on:
       - cart-cache
     environment:
-      PRODUCT_API_URL: http://172.17.0.1:8080/api
-      LOGIN_API_URL: http://172.17.0.1:8081/api
-      RedisConnection: cart-cache
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - PRODUCT_API_URL=http://172.17.0.1:8080/api
+      - LOGIN_API_URL=http://172.17.0.1:8081/api
+      - RedisConnection=cart-cache
+    volumes:
+      - /obj/Docker/publish/:/app
+      - ~/.nuget/packages:/root/.nuget/packages:ro
